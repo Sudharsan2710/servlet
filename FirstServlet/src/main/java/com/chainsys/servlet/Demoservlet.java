@@ -28,16 +28,26 @@ public class Demoservlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		String fullName = request.getParameter("fullname");
 		
-		String Username=request.getParameter("Username");
-		String phoneNumber =request.getParameter("phoneNo");
-		String email = request.getParameter("Email");
-		PrintWriter	out=response.getWriter();
-	out.println(Username);
-	out.println(phoneNumber);
-	out.println(email);
+		String e_mail = request.getParameter("email");
+		String password1 = request.getParameter("password");
+		String confirm_password = request.getParameter("confirm-password");
+		String date = request.getParameter("birthdate");
+		String gender = request.getParameter("gender");
+		PrintWriter out = response.getWriter();
 		
 		
+		out.println(fullName);
+		out.println(e_mail);
+		out.println(password1);
+		out.println(confirm_password);
+		out.println(date);
+		out.println(gender);
+		
+		
+
 	}
 
 	/**

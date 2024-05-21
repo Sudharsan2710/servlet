@@ -35,9 +35,11 @@ public class EmployeeServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+	
 		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/employeered.jsp");
+		
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("employeemessage.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -45,30 +47,34 @@ public class EmployeeServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String Fullname = request.getParameter("fullname");
-		String Email = request.getParameter("email");
-		String Password = request.getParameter("password");
-		String Contact = request.getParameter("contact");
+		doGet(request,response);
+		String fullname = request.getParameter("fullname");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String contact = request.getParameter("contact");
 		
 		
 		Employee employee = new Employee();
-		employee.setFullname(Fullname);
-		employee.setEmail(Email);
-		employee.setPassword(Password);
-		employee.setContact(Contact);
+		employee.setFullname(fullname);
+		employee.setEmail(email);
+		employee.setPassword(password);
+		employee.setContact(contact);
 		
 		
 		try {
-			employeedao.Employeeregister(employee);
+			try {
+				employeedao.Employeeregister(employee);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/employeemessage.jsp");
-		dispatcher.forward(request, response);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("employeered.jsp");
+		//dispatcher.forward(request, response);
 	}
 	
 

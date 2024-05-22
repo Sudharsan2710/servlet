@@ -124,7 +124,7 @@ html,body{
 <form action="<%=request.getContextPath() %>/EmployeeServlet" method="post">
         
         <div class="container">
-            <h2>Employee Registration</h2>
+            <h2>Add Employee Registration</h2>
 
             <div class="form-group">
                 <label for="fullname">Full Name:</label>

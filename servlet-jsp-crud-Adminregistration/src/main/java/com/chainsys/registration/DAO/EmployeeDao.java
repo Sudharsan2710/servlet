@@ -11,196 +11,164 @@ import java.util.List;
 import com.chainsys.registration.model.Employee;
 
 public class EmployeeDao {
-	
-	String url = "jdbc:mysql://localhost:3306/employee";
-	String user = "root";
-	String password1 = "Sudha@27102001";
-	Employee emp = new Employee();
-	
 
-	private static final String InsertEmployee = "insert into employeedetails"
-			+ "(fullname,email,password,contact)values + (?,?,?,?)";
-	private static final String SelectEmployeebyID = "select id,fullname,email,password,contact from employeedetails where id = ?";
-	private static final String SelectAllEmployee = "select * from  employeedetails";
-	private static final String UpdateEmployee = "update employeedetails set fullname = ?, email = ?,password = ?,contact= ?";
-	private static final String DeleteEmployee = "delete from user where id = ?";
-	
-	
-	
-	
-	protected Connection getConnection(){
-		Connection con=null;
+	public static Connection connectDB() {
+		// connection object
+		Connection connection = null;
 		try {
+			// returns the class object
+			Class.forName("com.mysql.jdbc.Driver");
 		
-
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			con = DriverManager.getConnection(url, user, password1);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/employee", "root", "Sudha@27102001");
 		}
-		return con;
-	}
-	
-	
-	
-	public void Employeeinsert(Employee e) throws SQLException, ClassNotFoundException {
 
+		catch (Exception message) {
+			System.out.println(message);
+		}
+		return connection;
+	}
+
+
+
+	public static boolean Employeeinsert(Employee e) throws SQLException, ClassNotFoundException {
+		boolean result = false;
 		try {
 
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
-			Connection con = DriverManager.getConnection(url, user, password1);
-
-			PreparedStatement pst = con.prepareStatement(InsertEmployee);
+			Connection con = EmployeeDao.connectDB();
+			String query = "insert into employeedetails" + "(fullname,email,password,contact)values + (?,?,?,?)";
+			PreparedStatement pst = con.prepareStatement(query);
 
 			pst.setString(1, e.getFullname());
 			pst.setString(2, e.getEmail());
 			pst.setString(3, e.getPassword());
 			pst.setString(4, e.getContact());
-			pst.executeUpdate();
+			int i = pst.executeUpdate();
+			
+			if(i==1) {
+				result=true;
+			}
+			con.close();
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+		return result;
 
 	}
 
+	public static Employee getEmployeeById(int id) throws SQLException, ClassNotFoundException {
 
+		Employee emp=null;
+		List<Employee> e=new ArrayList<>();
 
+		Class.forName("com.mysql.cj.jdbc.Driver");
 
-	public Employee Selectemployeebyid(int id) throws SQLException, ClassNotFoundException {
-		Employee ey = null;
+		Connection con = EmployeeDao.connectDB();
 
-		try {
+		String query = "select id,fullname,email,password,contact from employeedetails where id = ?";
+		PreparedStatement pst = con.prepareStatement(query);
 
-			Class.forName("com.mysql.cj.jdbc.Driver");
+		pst.setInt(1, emp.getId());
 
-			Connection con = DriverManager.getConnection(url, user, password1);
-
-			PreparedStatement pst = con.prepareStatement(SelectEmployeebyID);
+		ResultSet rs = pst.executeQuery();
 			
-			pst.setInt(1, emp.getId());
-			System.out.println(pst);
+		if (rs.next()) {
+			emp=new Employee();
+			emp.setId(rs.getInt(1));
+			emp.setFullname(rs.getString(2));
+			emp.setEmail(rs.getString(3));
+			emp.setPassword(rs.getString(4));
+			emp.setContact(rs.getString(5));
 
-			ResultSet rs = pst.executeQuery();
-			
-			while(rs.next()) {
-				String fullname = rs.getString("fullname");
-				String email = rs.getString("email");
-				String password = rs.getString("password");
-				String contact = rs.getString("contact");
-				ey= new Employee(fullname,email,password,contact); 
-						}
-
-		} catch (SQLException ex) {
-			ex.printStackTrace();
 		}
-		return ey;
-
+		con.close();
+		return emp;
 	}
-	
-	
-	
-	public List<Employee> SelectAllEmployees() throws SQLException, ClassNotFoundException {
-		Employee ey = null;
-		List<Employee> alist = new ArrayList<>();
+
+	public static List<Employee> getAllEmployees() throws SQLException, ClassNotFoundException {
+
+		List<Employee> list = new ArrayList<>();
+		Employee emp=null;
 		try {
 
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
-			Connection con = DriverManager.getConnection(url, user, password1);
-
-			PreparedStatement pst = con.prepareStatement(SelectEmployeebyID);
-			
-		
-			System.out.println(pst);
+			Connection con = EmployeeDao.connectDB();
+			String query = "select * from  employeedetails";
+			PreparedStatement pst = con.prepareStatement(query);
 
 			ResultSet rs = pst.executeQuery();
-			
-			while(rs.next()) {
-				int id = rs.getInt("id");
-				String fullname = rs.getString("fullname");
-				String email = rs.getString("email");
-				String password = rs.getString("password");
-				String contact = rs.getString("contact");
-				alist.add(new Employee(fullname,email,password,contact)); 
-						
+
+			while (rs.next()) {
+				 emp = new Employee();
+				emp.setId(rs.getInt(1));
+				emp.setFullname(rs.getString(2));
+				emp.setEmail(rs.getString(3));
+				emp.setPassword(rs.getString(4));
+				emp.setContact(rs.getString(5));
+				list.add(emp);
+
 			}
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		return alist;
+		return list;
 	}
-	public boolean UpdateEmployee(Employee e)
-			throws SQLException, ClassNotFoundException {
+
+	public static boolean UpdateEmployee(Employee e) throws SQLException, ClassNotFoundException {
 		boolean rowUpdated = false;
 		try {
 
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
-			Connection con = DriverManager.getConnection(url, user, password1);
+			Connection con = EmployeeDao.connectDB();
+			String query = "update employeedetails set fullname = ?, email = ?,password = ?,contact= ? where id=?";
+			PreparedStatement pst = con.prepareStatement(query);
 
-			PreparedStatement pst = con.prepareStatement(UpdateEmployee);
+			pst.setString(1, e.getFullname());
+			pst.setString(2, e.getEmail());
+			pst.setString(3, e.getPassword());
+			pst.setString(4, e.getContact());
+			pst.setInt(5, e.getId());
+			int i = pst.executeUpdate();
 			
-			pst.setString(2, emp.getFullname());
-			pst.setString(3, emp.getEmail());
-			pst.setString(4, emp.getPassword());
-			pst.setString(5, emp.getContact());
-			rowUpdated=pst.executeUpdate()>0;
+			if(i==1) {
+				rowUpdated=true;
+			}
 		}
-		
-		catch(Exception s) {
+
+		catch (Exception s) {
 			s.printStackTrace();
 		}
 		return rowUpdated;
-		
+
 	}
-	
-	public  boolean deleteEmployee(int id) throws ClassNotFoundException {
+
+	public static boolean deleteEmployee(int id) throws ClassNotFoundException {
 		boolean rowDeleted = false;
 		try {
-			
-//			Class.forName("com.mysql.cj.jdbc.Driver");
 
-			Connection con = DriverManager.getConnection(url, user, password1);
-			
-			PreparedStatement pst = con.prepareStatement(DeleteEmployee);
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+			Connection con = EmployeeDao.connectDB();
+			String query = "delete from user where id = ?";
+			PreparedStatement pst = con.prepareStatement(query);
 			pst.setInt(1, id);
-			
-			rowDeleted=pst.executeUpdate() > 0;
-			
+
+		int	rDeleted = pst.executeUpdate();
+		if(rDeleted==1) {
+			rowDeleted=true;
+		}
 
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return rowDeleted;
 
-		
-
 	}
-	
+
 }
-		
-		
-		
-
-	
-	
-		
-
-	
-	
-	
-	
-	
-	
-
-
-
-
-
